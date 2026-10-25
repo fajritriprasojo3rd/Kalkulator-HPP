@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buku Kas & HPP Usaha</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg-body: #eef1f8;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-placeholder: #94a3b8;
+    --border-color: #e2e8f0;
+    --input-bg: #f8fafc;
+    --input-focus-bg: #ffffff;
+    --table-border: #f1f5f9;
+    --box-bg: #f8fafc;
+    --box-border: #eef2f7;
+    --shadow: 0 4px 16px rgba(15,23,42,.07);
+    --shadow-header: 0 10px 30px rgba(79,70,229,.28);
+    --badge-masuk-bg: #dcfce7;
+    --badge-masuk-text: #16a34a;
+    --badge-keluar-bg: #fee2e2;
+    --badge-keluar-text: #dc2626;
+    --kotak-hijau-bg: #ecfdf5;
+    --kotak-hijau-border: #a7f3d0;
+    --kotak-hijau-val: #059669;
+    --kotak-merah-bg: #fef2f2;
+    --kotak-merah-border: #fecaca;
+    --kotak-merah-val: #dc2626;
+    --btn-soft-bg: #eef2ff;
+    --btn-soft-text: #4f46e5;
+    --btn-danger-bg: #fee2e2;
+    --btn-danger-text: #dc2626;
+    --btn-danger-hover: #fecaca;
+    --btn-warning-bg: #fef3c7;
+    --btn-warning-text: #d97706;
+    --btn-warning-hover: #fde68a;
+    --bahan-row-bg: #f8fafc;
+    --bahan-row-border: #e2e8f0;
+  }
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-placeholder: #64748b;
+    --border-color: #334155;
+    --input-bg: #0f172a;
+    --input-focus-bg: #1e293b;
+    --table-border: #334155;
+    --box-bg: #0f172a;
+    --box-border: #334155;
+    --shadow: 0 4px 16px rgba(0,0,0,.3);
+    --shadow-header: 0 10px 30px rgba(0,0,0,.4);
+    --badge-masuk-bg: rgba(22, 163, 74, 0.2);
+    --badge-masuk-text: #4ade80;
+    --badge-keluar-bg: rgba(220, 38, 38, 0.2);
+    --badge-keluar-text: #f87171;
+    --kotak-hijau-bg: rgba(5, 150, 105, 0.15);
+    --kotak-hijau-border: rgba(5, 150, 105, 0.3);
+    --kotak-hijau-val: #34d399;
+    --kotak-merah-bg: rgba(220, 38, 38, 0.15);
+    --kotak-merah-border: rgba(220, 38, 38, 0.3);
+    --kotak-merah-val: #f87171;
+    --btn-soft-bg: rgba(79, 70, 229, 0.2);
+    --btn-soft-text: #818cf8;
+    --btn-danger-bg: rgba(220, 38, 38, 0.2);
+    --btn-danger-text: #f87171;
+    --btn-danger-hover: rgba(220, 38, 38, 0.3);
+    --btn-warning-bg: rgba(217, 119, 6, 0.2);
+    --btn-warning-text: #fbbf24;
+    --btn-warning-hover: rgba(217, 119, 6, 0.3);
+    --bahan-row-bg: #0f172a;
+    --bahan-row-border: #334155;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg-body);color:var(--text-main);padding:16px;min-height:100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .wrap{max-width:1020px;margin:0 auto}
+  header{
+    background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);
+    color:#fff;padding:22px 24px;border-radius:20px;
+    box-shadow:var(--shadow-header);margin-bottom:18px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  header h1{font-size:1.25rem;margin-bottom:2px}
+  header p{opacity:.85;font-size:.85rem}
+  .user-bar{
+    display:flex;align-items:center;gap:8px;font-size:.8rem;
+    background:rgba(255,255,255,.15);padding:8px 14px;border-radius:30px;
+  }
+  .theme-toggle {
+    background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 1.1rem;
+    cursor: pointer; padding: 6px 10px; border-radius: 20px; display: flex;
+    align-items: center; justify-content: center; transition: 0.2s;
+  }
+  .theme-toggle:hover { background: rgba(255,255,255,.3); transform: scale(1.05); }
+  
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{
+    flex:1;min-width:120px;padding:13px 14px;border:none;border-radius:12px;
+    background:var(--bg-card);color:var(--text-muted);font-size:.9rem;font-weight:600;cursor:pointer;
+    box-shadow:var(--shadow);transition:.2s;font-family:inherit;
+  }
+  .tab:hover{transform:translateY(-1px)}
+  .tab.active{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 6px 18px rgba(79,70,229,.35)}
+  .panel{display:none}
+  .panel.active{display:block}
+  .card{
+    background:var(--bg-card);border-radius:16px;padding:20px;
+    box-shadow:var(--shadow);margin-bottom:16px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card h2{font-size:1.02rem;margin-bottom:14px;color:var(--text-main);display:flex;align-items:center;gap:8px}
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:#4f46e5;display:inline-block}
+  label{display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:6px}
+  input,select{
+    width:100%;padding:11px 13px;border:1.5px solid var(--border-color);border-radius:10px;
+    font-size:.95rem;font-family:inherit;color:var(--text-main);background:var(--input-bg);transition:.15s;
+  }
+  input::placeholder{color:var(--text-placeholder)}
+  input:focus,select:focus{outline:none;border-color:#6366f1;background:var(--input-focus-bg);box-shadow:0 0 0 3px rgba(99,102,241,.13)}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  
+  .bahan-row{
+    display:grid;grid-template-columns:2fr 70px 110px 100px 38px;
+    gap:8px;align-items:center;margin-bottom:10px;
+    background:var(--bahan-row-bg);padding:10px;border-radius:12px;border:1px solid var(--bahan-row-border);
+    transition: background-color 0.3s ease;
+  }
+  .bahan-row .sub{font-size:.85rem;font-weight:700;color:#818cf8;text-align:right}
+  
+  .hpp-hasil-row {
+    display:grid;grid-template-columns:2fr 100px 38px;
+    gap:8px;align-items:center;margin-bottom:10px;
+    background:var(--bahan-row-bg);padding:10px;border-radius:12px;border:1px solid var(--bahan-row-border);
+  }
+  
+  .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
+  .btn-icon {
+    width:32px; height:32px; border:none; border-radius:8px; font-size:1rem;
+    cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:center;
+  }
+  .btn-icon.edit { background: var(--btn-warning-bg); color: var(--btn-warning-text); }
+  .btn-icon.edit:hover { background: var(--btn-warning-hover); transform: scale(1.05); }
+  .btn-icon.delete { background: var(--btn-danger-bg); color: var(--btn-danger-text); }
+  .btn-icon.delete:hover { background: var(--btn-danger-hover); transform: scale(1.05); }
+
+  .btn{
+    padding:12px 20px;border:none;border-radius:11px;font-size:.9rem;font-weight:600;
+    cursor:pointer;transition:.15s;font-family:inherit;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .btn-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 4px 14px rgba(79,70,229,.3)}
+  .btn-soft{background:var(--btn-soft-bg);color:var(--btn-soft-text)}
+  .btn-danger{background:var(--btn-danger-bg);color:var(--btn-danger-text)}
+
+  .kotak{padding:16px;border-radius:13px;background:var(--box-bg);border:1.5px solid var(--box-border)}
+  .kotak .lbl{font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+  .kotak .val{font-size:1.2rem;font-weight:800;color:var(--text-main)}
+  .kotak.utama{background:linear-gradient(135deg,#4f46e5,#7c3aed);border-color:transparent}
+  .kotak.utama .lbl{color:rgba(255,255,255,.75)}
+  .kotak.utama .val{color:#fff}
+  .kotak.hijau{background:var(--kotak-hijau-bg);border-color:var(--kotak-hijau-border)}
+  .kotak.hijau .val{color:var(--kotak-hijau-val)}
+  .kotak.merah{background:var(--kotak-merah-bg);border-color:var(--kotak-merah-border)}
+  .kotak.merah .val{color:var(--kotak-merah-val)}
+
+  table{width:100%;border-collapse:collapse;font-size:.87rem}
+  th{text-align:left;padding:10px 8px;color:var(--text-muted);font-size:.71rem;text-transform:uppercase;
+     letter-spacing:.4px;border-bottom:2px solid var(--border-color);white-space:nowrap}
+  td{padding:11px 8px;border-bottom:1px solid var(--table-border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .badge{padding:4px 10px;border-radius:20px;font-size:.71rem;font-weight:700;white-space:nowrap}
+  .badge.masuk{background:var(--badge-masuk-bg);color:var(--badge-masuk-text)}
+  .badge.keluar{background:var(--badge-keluar-bg);color:var(--badge-keluar-text)}
+  .nominal{font-weight:700;white-space:nowrap}
+  .nominal.masuk{color:var(--badge-masuk-text)}
+  .nominal.keluar{color:var(--badge-keluar-text)}
+  .empty{text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem}
+  .ringkas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .scroll{overflow-x:auto}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(110px);
+    background:#1e293b;color:#fff;padding:13px 24px;border-radius:11px;font-size:.88rem;
+    font-weight:600;opacity:0;transition:.3s;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.25);
+    max-width:90vw;text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.error{background:#dc2626}
+
+  footer{text-align:center;color:var(--text-muted);font-size:.78rem;padding:14px 0 6px}
+
+  @media(max-width:640px){
+    .bahan-row { grid-template-columns: 1fr 70px; padding: 12px; gap: 8px; }
+    .bahan-row select { grid-column: 1 / -1; }
+    .bahan-row .b-harga { grid-column: 1 / 2; }
+    .bahan-row .sub { grid-column: 2 / 3; font-size: .95rem; text-align: right; }
+    .bahan-row .btn-del { grid-column: 1 / -1; width: 100%; height: 36px; }
+
+    .hpp-hasil-row { grid-template-columns: 1fr 80px; padding: 12px; gap: 8px; }
+    .hpp-hasil-row .btn-del { grid-column: 1 / -1; width: 100%; height: 36px; }
+    
+    header h1{font-size:1.05rem}
+    header{padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="appScreen">
+
+  <header>
+    <div>
+      <h1>📖 Buku Kas & HPP</h1>
+      <p>Catatan Uang & Kalkulator Potong</p>
+    </div>
+    <div class="user-bar">
+      <button onclick="toggleTheme()" class="theme-toggle" id="mainThemeBtn" title="Ubah Tema">🌙</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-target="panel-kas">💰 Buku Kas</button>
+    <button class="tab" data-target="panel-hpp">🍗 HPP Potong Ayam</button>
+    <button class="tab" data-target="panel-master">📦 Master Item</button>
+  </div>
+
+  <!-- ============ PANEL BUKU KAS ============ -->
+  <div class="panel active" id="panel-kas">
+    
+    <div class="ringkas">
+      <div class="kotak hijau">
+        <div class="lbl">Pemasukan (Jual)</div>
+        <div class="val" id="sumMasuk">Rp 0</div>
+      </div>
+      <div class="kotak merah">
+        <div class="lbl">Pengeluaran (Belanja)</div>
+        <div class="val" id="sumKeluar">Rp 0</div>
+      </div>
+      <div class="kotak utama">
+        <div class="lbl">Saldo Kas (Uang Laci)</div>
+        <div class="val" id="sumSaldo">Rp 0</div>
+      </div>
+    </div>
+
+    <div class="card" id="cardFormKas">
+      <h2><span class="dot"></span>Catat Transaksi</h2>
+      <form id="formKas" class="grid g2">
+        <input type="hidden" id="fIdKas" value="">
+        <div>
+          <label>Tipe Transaksi</label>
+          <select id="fTipe" onchange="togglePilihBarang()">
+            <option value="keluar">Pengeluaran (Belanja)</option>
+            <option value="masuk">Pemasukan (Hasil Jual)</option>
+          </select>
+        </div>
+        <div>
+          <label>Tanggal</label>
+          <input type="date" id="fTanggal" required>
+        </div>
+        
+        <div id="wrapperPilihBarang">
+          <label>Pilih Barang (Otomatis)</label>
+          <select id="fPilihBarang" onchange="autoFillBarang()">
+            <option value="">-- Ketik Manual Saja --</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Keterangan</label>
+          <input type="text" id="fKet" placeholder="Misal: Jual Daging 5 Porsi" required>
+        </div>
+        <div>
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="fJumlah" min="0" step="any" placeholder="0" required>
+        </div>
+        <div style="grid-column:1/-1; margin-top:8px; display:flex; gap:10px;">
+          <button class="btn btn-primary" type="submit" id="btnSimpanKas">+ Simpan Catatan</button>
+          <button class="btn btn-danger" type="button" id="btnBatalEditKas" style="display:none;" onclick="batalEditKas()">Batal Edit</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Riwayat Transaksi</h2>
+      <div class="grid g2" style="margin-bottom:14px">
+        <div>
+          <label>Filter Tipe</label>
+          <select id="filterTipe" onchange="renderKas()">
+            <option value="semua">Semua</option>
+            <option value="masuk">Pemasukan</option>
+            <option value="keluar">Pengeluaran</option>
+          </select>
+        </div>
+        <div>
+          <label>Filter Bulan</label>
+          <input type="month" id="filterBulan" onchange="renderKas()">
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th><th>Tipe</th><th>Keterangan</th><th>Jumlah</th><th style="text-align:right;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyKas"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PANEL HPP ============ -->
+  <div class="panel" id="panel-hpp">
+    <div class="card">
+      <h2><span class="dot"></span>1. Modal Ayam & Bumbu</h2>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Pilih bahan yang dipakai (Ayam, Beras, Bumbu, Gas).</p>
+      <div id="hppBahanList"></div>
+      <button class="btn btn-soft" id="btnTambahHppBahan">+ Tambah Modal</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>2. Hasil Potongan (Jualan)</h2>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">1 Ekor Ayam jadi berapa? (Misal: Daging 10, Jeroan 1, Kepala 1).</p>
+      <div id="hppHasilList"></div>
+      <button class="btn btn-soft" id="btnTambahHppHasil">+ Tambah Hasil</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>3. Hasil Kalkulasi</h2>
+      <div class="ringkas">
+        <div class="kotak merah">
+          <div class="lbl">Total Modal</div>
+          <div class="val" id="outHppModal">Rp 0</div>
+        </div>
+        <div class="kotak hijau">
+          <div class="lbl">Total Porsi</div>
+          <div class="val" id="outHppPorsi">0</div>
+        </div>
+        <div class="kotak utama">
+          <div class="lbl">HPP per Porsi</div>
+          <div class="val" id="outHppPerPorsi">Rp 0</div>
+        </div>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-top:12px; margin-bottom:16px;">*HPP didapat dari Total Modal dibagi rata ke semua porsi.</p>
+      <button class="btn btn-primary" id="btnSimpanHPP" style="width:100%;">💾 Simpan Hasil ke Master Menu</button>
+    </div>
+  </div>
+
+  <!-- ============ PANEL MASTER ITEM ============ -->
+  <div class="panel" id="panel-master">
+    <div class="card" id="cardFormMaster">
+      <h2><span class="dot"></span>Tambah / Edit Master Item</h2>
+      <form id="formMaster" class="grid g2">
+        <input type="hidden" id="mId" value="">
+        <div>
+          <label>Nama Barang / Menu</label>
+          <input type="text" id="mNama" placeholder="Misal: Ayam / Daging" required>
+        </div>
+        <div>
+          <label>Kategori</label>
+          <select id="mKategori">
+            <option value="bahan_baku">Bahan Baku (Belanja)</option>
+            <option value="menu">Menu Jualan (Hasil)</option>
+          </select>
+        </div>
+        <div>
+          <label>Harga Normal / HPP (Rp)</label>
+          <input type="number" id="mHarga" min="0" step="any" placeholder="Misal: 50000" required>
+        </div>
+        <div style="grid-column:1/-1; margin-top:8px; display:flex; gap:10px;">
+          <button class="btn btn-primary" type="submit" id="btnSubmitMaster">+ Simpan Item</button>
+          <button class="btn btn-danger" type="button" id="btnBatalMaster" style="display:none;" onclick="batalEditMaster()">Batal Edit</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Daftar Master Item</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th><th>Kategori</th><th>Harga</th><th style="text-align:right;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMaster">
+            <tr><td colspan="4" class="empty">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>Data tersinkron ke Supabase</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'dark' || (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+
+  window.toggleTheme = () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      updateThemeIcons('light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      updateThemeIcons('dark');
+    }
+  };
+
+  function updateThemeIcons(theme) {
+    const icon = theme === 'dark' ? '☀️' : '🌙';
+    const mainBtn = document.getElementById('mainThemeBtn');
+    if(mainBtn) mainBtn.textContent = icon;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    updateThemeIcons(isDark ? 'dark' : 'light');
+  });
+</script>
+
+<script type="module">
+const SUPABASE_URL      = 'https://ocqedmogvkcvfkjekayr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcWVkbW9ndmtjdmZramVrYXlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NTk0NzIsImV4cCI6MjEwODIzNTQ3Mn0.bQFVAIbaquQOj7sTT_CZQbZmgE7v2EmnpkE-zbW6w3Y';
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const rupiah = n => 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+const angka  = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const esc    = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const formatTanggal = s => { if(!s) return '-'; const [y,m,d] = s.split('-'); return `${parseInt(d)} ${BULAN[parseInt(m)-1]} ${y}`; };
+const hariIni = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+
+let toastTimer;
+const toast = (msg, isError = false) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.toggle('error', isError); t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+};
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let transaksi = [];
+let masterBahan = [];
+
+const tbodyMaster = document.getElementById('tbodyMaster');
+
+// ================= MASTER ITEM =================
+async function loadMasterBahan(){
+  tbodyMaster.innerHTML = '<tr><td colspan="4" class="empty">Memuat...</td></tr>';
+  const { data, error } = await supabase.from('keuangan_master_bahan').select('*').order('kategori').order('nama');
+  if (error) { tbodyMaster.innerHTML = `<tr><td colspan="4" class="empty">Error: ${error.message}</td></tr>`; return; }
+  masterBahan = data || [];
+  renderMasterBahan();
+  togglePilihBarang(); // Refresh dropdown Kas
+  renderHPPRows(); // Refresh dropdown HPP
+}
+
+function getKategoriLabel(kat) {
+  if (kat === 'menu') return 'Menu Jualan';
+  return 'Bahan Baku';
+}
+
+function renderMasterBahan(){
+  if (!masterBahan.length) { tbodyMaster.innerHTML = '<tr><td colspan="4" class="empty">Belum ada item.</td></tr>'; return; }
+  tbodyMaster.innerHTML = masterBahan.map(b => `
+    <tr>
+      <td>${esc(b.nama)}</td>
+      <td><span style="font-size:0.75rem;background:var(--bg-body);padding:2px 6px;border-radius:4px;">${getKategoriLabel(b.kategori)}</span></td>
+      <td>${rupiah(b.harga_satuan)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-icon edit" onclick="editMaster('${b.id}')" title="Edit">✏️</button>
+          <button class="btn-icon delete" onclick="hapusMaster('${b.id}')" title="Hapus">×</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.editMaster = (id) => {
+  const item = masterBahan.find(b => b.id === id);
+  if (!item) return;
+  document.getElementById('mId').value = item.id;
+  document.getElementById('mNama').value = item.nama;
+  document.getElementById('mKategori').value = item.kategori || 'bahan_baku';
+  document.getElementById('mHarga').value = item.harga_satuan;
+  document.getElementById('btnSubmitMaster').textContent = 'Update Item';
+  document.getElementById('btnBatalMaster').style.display = 'block';
+  document.getElementById('cardFormMaster').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.batalEditMaster = () => {
+  document.getElementById('mId').value = '';
+  document.getElementById('formMaster').reset();
+  document.getElementById('btnSubmitMaster').textContent = '+ Simpan Item';
+  document.getElementById('btnBatalMaster').style.display = 'none';
+};
+
+document.getElementById('formMaster').onsubmit = async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('mId').value;
+  const nama = document.getElementById('mNama').value.trim();
+  const kategori = document.getElementById('mKategori').value;
+  const harga = angka(document.getElementById('mHarga').value);
+  if (!nama || harga <= 0) return toast('Lengkapi data', true);
+  
+  const btn = document.getElementById('btnSubmitMaster');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  const payload = { nama, kategori, satuan: 'pcs', harga_satuan: harga };
+  
+  let error;
+  if (id) {
+    const res = await supabase.from('keuangan_master_bahan').update(payload).eq('id', id);
+    error = res.error;
+  } else {
+    const res = await supabase.from('keuangan_master_bahan').insert(payload);
+    error = res.error;
+  }
+  
+  btn.disabled = false;
+  btn.textContent = id ? 'Update Item' : '+ Simpan Item';
+  if (error) { toast('Gagal simpan: ' + error.message, true); return; }
+  if (id) batalEditMaster(); else e.target.reset();
+  toast(id ? 'Item diupdate ✓' : 'Item tersimpan ✓'); 
+  loadMasterBahan();
+};
+
+window.hapusMaster = async (id) => {
+  if (!confirm('Hapus item ini?')) return;
+  const { error } = await supabase.from('keuangan_master_bahan').delete().eq('id', id);
+  if (error) { toast('Gagal hapus: ' + error.message, true); return; }
+  toast('Item dihapus'); loadMasterBahan();
+};
+
+// ================= BUKU KAS =================
+window.togglePilihBarang = () => {
+  const tipe = document.getElementById('fTipe').value;
+  const wrapper = document.getElementById('wrapperPilihBarang');
+  wrapper.style.display = 'block';
+  
+  const sel = document.getElementById('fPilihBarang');
+  let opts = '<option value="">-- Ketik Manual Saja --</option>';
+  
+  const filterKat = tipe === 'keluar' ? 'bahan_baku' : 'menu';
+  masterBahan.filter(b => b.kategori === filterKat).forEach(b => {
+    opts += `<option value="${b.id}" data-harga="${b.harga_satuan}" data-nama="${esc(b.nama)}">${esc(b.nama)}</option>`;
+  });
+  sel.innerHTML = opts;
+};
+
+window.autoFillBarang = () => {
+  const sel = document.getElementById('fPilihBarang');
+  const opt = sel.options[sel.selectedIndex];
+  const tipe = document.getElementById('fTipe').value;
+  
+  if (sel.value) {
+    if (tipe === 'keluar') {
+      document.getElementById('fKet').value = 'Beli ' + opt.dataset.nama;
+      document.getElementById('fJumlah').value = opt.dataset.harga;
+    } else {
+      document.getElementById('fKet').value = 'Jual ' + opt.dataset.nama;
+      document.getElementById('fJumlah').value = ''; // Biarkan kosong untuk diisi total pendapatan
+    }
+  } else {
+    document.getElementById('fKet').value = '';
+    document.getElementById('fJumlah').value = '';
+  }
+};
+
+async function loadKas(){
+  const tbody = document.getElementById('tbodyKas');
+  tbody.innerHTML = '<tr><td colspan="5" class="empty">Memuat...</td></tr>';
+  const { data, error } = await supabase.from('keuangan_transaksi').select('*').order('tanggal', { ascending: false }).order('created_at', { ascending: false });
+  if (error) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Gagal load: ${error.message}</td></tr>`; return; }
+  transaksi = data || []; renderKas();
+}
+
+async function insertKas(t){
+  const { error } = await supabase.from('keuangan_transaksi').insert(t);
+  if (error) { toast('Gagal simpan: ' + error.message, true); return false; }
+  return true;
+}
+
+window.editKas = (id) => {
+  const item = transaksi.find(t => t.id === id);
+  if (!item) return;
+  document.getElementById('fIdKas').value = item.id;
+  document.getElementById('fTipe').value = item.tipe;
+  document.getElementById('fTanggal').value = item.tanggal;
+  document.getElementById('fKet').value = item.keterangan;
+  document.getElementById('fJumlah').value = item.jumlah;
+  
+  togglePilihBarang();
+  document.getElementById('fPilihBarang').value = ''; // Reset dropdown
+  
+  document.getElementById('btnSimpanKas').textContent = 'Update Catatan';
+  document.getElementById('btnBatalEditKas').style.display = 'block';
+  document.getElementById('cardFormKas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.batalEditKas = () => {
+  document.getElementById('fIdKas').value = '';
+  document.getElementById('formKas').reset();
+  document.getElementById('fTanggal').value = hariIni();
+  document.getElementById('btnSimpanKas').textContent = '+ Simpan Catatan';
+  document.getElementById('btnBatalEditKas').style.display = 'none';
+  togglePilihBarang();
+};
+
+window.hapusKas = async (id) => {
+  if (!confirm('Hapus catatan ini?')) return;
+  const { error } = await supabase.from('keuangan_transaksi').delete().eq('id', id);
+  if (error) { toast('Gagal hapus: ' + error.message, true); return; }
+  await loadKas(); toast('Catatan dihapus');
+};
+
+function renderKas(){
+  const fTipe = document.getElementById('filterTipe').value;
+  const fBulan = document.getElementById('filterBulan').value;
+  const list = transaksi.filter(t => {
+    if (fTipe !== 'semua' && t.tipe !== fTipe) return false;
+    if (fBulan && !String(t.tanggal).startsWith(fBulan)) return false;
+    return true;
+  });
+
+  let masuk = 0, keluar = 0;
+  list.forEach(t => t.tipe === 'masuk' ? masuk += Number(t.jumlah) : keluar += Number(t.jumlah));
+  document.getElementById('sumMasuk').textContent = rupiah(masuk);
+  document.getElementById('sumKeluar').textContent = rupiah(keluar);
+  document.getElementById('sumSaldo').textContent = rupiah(masuk - keluar);
+
+  const tbody = document.getElementById('tbodyKas');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Belum ada catatan</td></tr>'; return; }
+  tbody.innerHTML = list.map(t => `
+    <tr>
+      <td>${formatTanggal(t.tanggal)}</td>
+      <td><span class="badge ${t.tipe}">${t.tipe === 'masuk' ? 'Masuk' : 'Keluar'}</span></td>
+      <td>${esc(t.keterangan)}</td>
+      <td class="nominal ${t.tipe}">${t.tipe === 'masuk' ? '+' : '−'} ${rupiah(t.jumlah)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-icon edit" onclick="editKas('${t.id}')" title="Edit">✏️</button>
+          <button class="btn-icon delete" onclick="hapusKas('${t.id}')" title="Hapus">×</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('formKas').onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSimpanKas');
+  const id = document.getElementById('fIdKas').value;
+  const tipe = document.getElementById('fTipe').value;
+  const tanggal = document.getElementById('fTanggal').value;
+  const ket = document.getElementById('fKet').value.trim();
+  const jumlah = angka(document.getElementById('fJumlah').value);
+  
+  if (!tanggal || !ket || jumlah <= 0) return toast('Lengkapi data', true);
+  
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  
+  let ok = false;
+  if (id) {
+    const { error } = await supabase.from('keuangan_transaksi').update({ tanggal, tipe, keterangan: ket, jumlah }).eq('id', id);
+    if (error) toast('Gagal update: ' + error.message, true);
+    else ok = true;
+  } else {
+    ok = await insertKas({ tanggal, tipe, keterangan: ket, jumlah });
+  }
+  
+  btn.disabled = false;
+  
+  if (ok) {
+    await loadKas();
+    batalEditKas();
+    toast(id ? 'Catatan diupdate ✓' : 'Catatan tersimpan ✓');
+  } else {
+    btn.textContent = id ? 'Update Catatan' : '+ Simpan Catatan';
+  }
+};
+
+// ================= HPP POTONG AYAM =================
+function tambahHppBahanRow(id = '', qty = '', harga = ''){
+  const row = document.createElement('div');
+  row.className = 'bahan-row';
+  let opts = '<option value="">-- Pilih Bahan --</option>';
+  masterBahan.filter(b => b.kategori !== 'menu').forEach(b => {
+    opts += `<option value="${b.id}" data-harga="${b.harga_satuan}">${esc(b.nama)} (${rupiah(b.harga_satuan)})</option>`;
+  });
+  opts += '<option value="manual">+ Ketik Manual</option>';
+
+  row.innerHTML = `
+    <select class="b-select">${opts}</select>
+    <input type="number" class="b-qty" placeholder="Qty" min="0" step="any" value="${qty}">
+    <input type="number" class="b-harga" placeholder="Harga" min="0" step="any" value="${harga}" readonly>
+    <div class="sub">Rp 0</div>
+    <button class="btn-del" type="button" title="Hapus">×</button>
+  `;
+  
+  const sel = row.querySelector('.b-select');
+  const inputHarga = row.querySelector('.b-harga');
+  
+  if (id) sel.value = id;
+
+  sel.onchange = (e) => {
+    if (e.target.value === 'manual') {
+      inputHarga.readOnly = false; inputHarga.value = ''; inputHarga.focus();
+    } else {
+      inputHarga.readOnly = true;
+      const opt = e.target.options[e.target.selectedIndex];
+      inputHarga.value = opt.dataset.harga || '';
+    }
+    hitungHPP();
+  };
+
+  row.querySelectorAll('input').forEach(i => i.addEventListener('input', hitungHPP));
+  row.querySelector('.btn-del').onclick = () => { row.remove(); hitungHPP(); };
+  document.getElementById('hppBahanList').appendChild(row);
+}
+
+function tambahHppHasilRow(nama = '', qty = ''){
+  const row = document.createElement('div');
+  row.className = 'hpp-hasil-row';
+  row.innerHTML = `
+    <input type="text" class="h-nama" placeholder="Nama (Misal: Daging)" value="${esc(nama)}">
+    <input type="number" class="h-qty" placeholder="Jumlah" min="1" step="any" value="${esc(qty)}">
+    <button class="btn-del" type="button" title="Hapus">×</button>
+  `;
+  row.querySelectorAll('input').forEach(i => i.addEventListener('input', hitungHPP));
+  row.querySelector('.btn-del').onclick = () => { row.remove(); hitungHPP(); };
+  document.getElementById('hppHasilList').appendChild(row);
+}
+
+function hitungHPP() {
+  let totalModal = 0;
+  document.querySelectorAll('#hppBahanList .bahan-row').forEach(row => {
+    const qty = angka(row.querySelector('.b-qty').value);
+    const harga = angka(row.querySelector('.b-harga').value);
+    row.querySelector('.sub').textContent = rupiah(qty * harga);
+    totalModal += qty * harga;
+  });
+
+  let totalPorsi = 0;
+  document.querySelectorAll('#hppHasilList .hpp-hasil-row').forEach(row => {
+    totalPorsi += angka(row.querySelector('.h-qty').value);
+  });
+
+  const hppPerPorsi = totalPorsi > 0 ? totalModal / totalPorsi : 0;
+
+  document.getElementById('outHppModal').textContent = rupiah(totalModal);
+  document.getElementById('outHppPorsi').textContent = totalPorsi;
+  document.getElementById('outHppPerPorsi').textContent = rupiah(hppPerPorsi);
+}
+
+function renderHPPRows() {
+  const currentData = document.querySelectorAll('#hppBahanList .bahan-row');
+  currentData.forEach(row => {
+    const sel = row.querySelector('.b-select');
+    const currentVal = sel.value;
+    let opts = '<option value="">-- Pilih Bahan --</option>';
+    masterBahan.filter(b => b.kategori !== 'menu').forEach(b => {
+      opts += `<option value="${b.id}" data-harga="${b.harga_satuan}">${esc(b.nama)} (${rupiah(b.harga_satuan)})</option>`;
+    });
+    opts += '<option value="manual">+ Ketik Manual</option>';
+    sel.innerHTML = opts;
+    if (currentVal) sel.value = currentVal;
+  });
+}
+
+function loadHPP() {
+  document.getElementById('hppBahanList').innerHTML = '';
+  document.getElementById('hppHasilList').innerHTML = '';
+  
+  tambahHppBahanRow();
+  tambahHppHasilRow('Daging', '10');
+  tambahHppHasilRow('Jeroan', '1');
+  tambahHppHasilRow('Kepala', '1');
+  
+  hitungHPP();
+}
+
+document.getElementById('btnTambahHppBahan').onclick = () => tambahHppBahanRow();
+document.getElementById('btnTambahHppHasil').onclick = () => tambahHppHasilRow();
+
+document.getElementById('btnSimpanHPP').onclick = async () => {
+  let totalModal = 0;
+  document.querySelectorAll('#hppBahanList .bahan-row').forEach(row => {
+    const qty = angka(row.querySelector('.b-qty').value);
+    const harga = angka(row.querySelector('.b-harga').value);
+    totalModal += qty * harga;
+  });
+
+  let totalPorsi = 0;
+  const hasilList = [];
+  document.querySelectorAll('#hppHasilList .hpp-hasil-row').forEach(row => {
+    const nama = row.querySelector('.h-nama').value.trim();
+    const qty = angka(row.querySelector('.h-qty').value);
+    if (nama && qty > 0) {
+      totalPorsi += qty;
+      hasilList.push({ nama, qty });
+    }
+  });
+
+  if (totalModal <= 0 || totalPorsi <= 0 || hasilList.length === 0) {
+    return toast('Isi modal dan hasil potongan dengan benar', true);
+  }
+
+  const hppPerPorsi = totalModal / totalPorsi;
+  const btn = document.getElementById('btnSimpanHPP');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  let errors = 0;
+  for (let item of hasilList) {
+    const existing = masterBahan.find(b => b.nama.toLowerCase() === item.nama.toLowerCase() && b.kategori === 'menu');
+    
+    if (existing) {
+      const { error } = await supabase.from('keuangan_master_bahan').update({ harga_satuan: hppPerPorsi }).eq('id', existing.id);
+      if (error) errors++;
+    } else {
+      const { error } = await supabase.from('keuangan_master_bahan').insert({
+        nama: item.nama,
+        kategori: 'menu',
+        satuan: 'porsi',
+        harga_satuan: hppPerPorsi
+      });
+      if (error) errors++;
+    }
+  }
+
+  btn.disabled = false; btn.textContent = '💾 Simpan Hasil ke Master Menu';
+
+  if (errors > 0) {
+    toast('Beberapa item gagal disimpan', true);
+  } else {
+    toast('HPP Menu berhasil disimpan! ✓');
+    loadMasterBahan(); // Refresh
+  }
+};
+
+// TABS
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active');
+  };
+});
+
+// INIT
+loadMasterBahan(); 
+loadKas();
+loadHPP();
+document.getElementById('fTanggal').value = hariIni();
+</script>
+</body>
+                                                            </html>
