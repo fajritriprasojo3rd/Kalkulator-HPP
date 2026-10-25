@@ -1,163 +1,138 @@
-// --- INISIALISASI SUPABASE ---
-const SUPABASE_URL = 'URL_SUPABASE_ANDA';
-const SUPABASE_ANON_KEY = 'ANON_KEY_ANDA';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+// ==========================================
+// KONFIGURASI SUPABASE (SUDAH TERISI OTOMATIS)
+// ==========================================
+const SUPABASE_URL      = 'https://ocqedmogvkcvfkjekayr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcWVkbW9ndmtjdmZramVrYXlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NTk0NzIsImV4cCI6MjEwODIzNTQ3Mn0.bQFVAIbaquQOj7sTT_CZQbZmgE7v2EmnpkE-zbW6w3Y';
+    
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const TABLE_NAME = 'kalkulator_state';
 const DOC_ID = 'data-kalkulator-utama';
 
-// Variabel penanda waktu untuk Auto-Save
 let timerAutoSave;
+const statusEl = document.getElementById('status-save');
 
-// ==========================================
-// 1. FUNGSI UNTUK MENYIMPAN SEMUA DATA (AUTO-SAVE)
-// ==========================================
-async function autoSaveData() {
-    // A. Ambil data dari baris dinamis (Tambah Modal)
+// FUNGSI SIMPAN (AUTO-SAVE)
+async function simpanData() {
+    statusEl.innerText = "Menyimpan...";
+    statusEl.style.color = "#94a3b8";
+    
     const arrayModal = [];
     document.querySelectorAll('.baris-modal').forEach(baris => {
         const bahan = baris.querySelector('.pilih-bahan').value;
         const qty = baris.querySelector('.input-qty').value;
         const harga = baris.querySelector('.input-harga').value;
         
-        // Hanya simpan jika baris tersebut ada isinya (tidak kosong melompong)
         if (bahan || qty || harga) {
             arrayModal.push({ bahan, qty, harga });
         }
     });
 
-    // B. Kumpulkan semua data ke dalam satu object
     const dataForm = {
-        modal_bahan: arrayModal, // Simpan sebagai Array
-        daging: document.getElementById('input-daging')?.value || '',
-        jeroan: document.getElementById('input-jeroan')?.value || '',
-        // tambahkan input statis lainnya di sini
+        modal_bahan: arrayModal,
+        daging: document.getElementById('input-daging').value,
+        jeroan: document.getElementById('input-jeroan').value,
     };
 
-    // C. Kirim ke Supabase (Upsert = Update kalau ada, Insert kalau baru)
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from(TABLE_NAME)
-        .upsert({ 
-            id: DOC_ID, 
-            form_data: dataForm,
-            updated_at: new Date()
-        });
+        .upsert({ id: DOC_ID, form_data: dataForm, updated_at: new Date() });
 
     if (error) {
-        console.error("Auto-save gagal:", error.message);
+        console.error("Gagal save:", error.message);
+        statusEl.innerText = "Gagal menyimpan! Cek database/RLS.";
+        statusEl.style.color = "#ef4444"; // Merah
     } else {
-        // Tampilkan indikator kecil di layar (opsional)
-        console.log("Tersimpan otomatis pada", new Date().toLocaleTimeString());
+        const time = new Date().toLocaleTimeString('id-ID');
+        statusEl.innerText = `Tersimpan otomatis (${time})`;
+        statusEl.style.color = "#4ade80"; // Hijau
     }
 }
 
-// ==========================================
-// 2. FUNGSI DEBOUNCE (Mencegah Spam Database)
-// ==========================================
-// Fungsi ini akan menunda penyimpanan 1 detik setelah user berhenti ngetik.
-// Jadi kalau ngetik "1000", database nggak di-update 4 kali (1, 10, 100, 1000).
+// FUNGSI DEBOUNCE (JEDA 1 DETIK)
 function handleInput() {
     clearTimeout(timerAutoSave);
-    timerAutoSave = setTimeout(autoSaveData, 1000); 
+    timerAutoSave = setTimeout(simpanData, 1000); 
 }
 
-// ==========================================
-// 3. FUNGSI MEMBUAT BARIS BARU (DINAMIS)
-// ==========================================
+// FUNGSI BUAT BARIS BARU (DINAMIS)
 function buatBarisBaru(bahan = '', qty = '', harga = '') {
     const container = document.getElementById('container-modal');
-    const barisBaru = document.createElement('div');
-    barisBaru.className = 'baris-modal';
+    const div = document.createElement('div');
+    div.className = 'baris-modal';
     
-    // Template HTML baris baru
-    barisBaru.innerHTML = `
-        <select class="pilih-bahan">
-            <option value="">-- Pilih Bahan --</option>
-            <option value="Ayam" ${bahan === 'Ayam' ? 'selected' : ''}>Ayam</option>
-            <option value="Beras" ${bahan === 'Beras' ? 'selected' : ''}>Beras</option>
-        </select>
+    const opsiBahan = ['Ayam', 'Beras', 'Bumbu', 'Gas'];
+    let selectOptions = '<option value="">-- Pilih Bahan --</option>';
+    opsiBahan.forEach(opt => {
+        selectOptions += `<option value="${opt}" ${bahan === opt ? 'selected' : ''}>${opt}</option>`;
+    });
+
+    div.innerHTML = `
+        <select class="pilih-bahan">${selectOptions}</select>
         <input type="number" class="input-qty" value="${qty}" placeholder="Qty">
         <input type="number" class="input-harga" value="${harga}" placeholder="Harga">
-        <button type="button" class="btn-hapus-baris">X</button>
+        <button type="button" class="btn-hapus">Hapus Baris</button>
     `;
 
-    // Tambahkan event auto-save ke inputan baru
-    barisBaru.querySelectorAll('input, select').forEach(el => {
+    div.querySelectorAll('input, select').forEach(el => {
         el.addEventListener('input', handleInput);
         el.addEventListener('change', handleInput);
     });
 
-    // Event tombol hapus baris
-    barisBaru.querySelector('.btn-hapus-baris').addEventListener('click', () => {
-        barisBaru.remove();
-        handleInput(); // Simpan ulang setelah baris dihapus
+    div.querySelector('.btn-hapus').addEventListener('click', () => {
+        div.remove();
+        handleInput(); 
     });
 
-    container.appendChild(barisBaru);
+    container.appendChild(div);
 }
 
-// ==========================================
-// 4. FUNGSI LOAD DATA DARI SUPABASE (SAAT REFRESH)
-// ==========================================
-async function loadData() {
-    const { data, error } = await supabase
+// FUNGSI LOAD DATA SAAT REFRESH
+async function muatData() {
+    statusEl.innerText = "Memuat data...";
+    
+    const { data, error } = await supabaseClient
         .from(TABLE_NAME)
         .select('form_data')
         .eq('id', DOC_ID)
         .single();
 
     if (error && error.code !== 'PGRST116') {
-        console.error("Gagal load data:", error.message);
+        console.error("Gagal load:", error.message);
+        statusEl.innerText = "Gagal memuat data.";
+        statusEl.style.color = "#ef4444";
         return;
     }
 
+    statusEl.innerText = "";
+
     if (data && data.form_data) {
         const form = data.form_data;
+        document.getElementById('input-daging').value = form.daging || '';
+        document.getElementById('input-jeroan').value = form.jeroan || '';
 
-        // A. Kembalikan input statis (Hasil Potongan)
-        if(document.getElementById('input-daging')) document.getElementById('input-daging').value = form.daging || '';
-        if(document.getElementById('input-jeroan')) document.getElementById('input-jeroan').value = form.jeroan || '';
-
-        // B. Kembalikan baris dinamis (Tambah Modal)
         const container = document.getElementById('container-modal');
-        container.innerHTML = ''; // Bersihkan form bawaan HTML
+        container.innerHTML = '';
 
         if (form.modal_bahan && form.modal_bahan.length > 0) {
-            // Looping data dari database, buat barisnya satu per satu
             form.modal_bahan.forEach(item => {
                 buatBarisBaru(item.bahan, item.qty, item.harga);
             });
         } else {
-            // Kalau belum ada data, buat 1 baris kosong bawaan
             buatBarisBaru();
         }
-        
-        console.log("Data berhasil dipulihkan!");
-        
-        // PENTING: Panggil fungsi hitung kalkulator Anda di sini!
-        // hitungTotal(); 
     } else {
-        // Jika baru pertama kali buka, buatkan 1 baris kosong
-        buatBarisBaru();
+        buatBarisBaru(); // Jika data kosong di DB, buat 1 baris kosong
     }
 }
 
-// ==========================================
-// 5. EVENT LISTENER UTAMA SAAT HALAMAN DIBUKA
-// ==========================================
+// JALANKAN SAAT HALAMAN DIBUKA
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Tarik data dari Supabase
-    loadData();
+    muatData();
 
-    // 2. Pasang auto-save ke input statis (Hasil Potongan)
-    document.querySelectorAll('#input-daging, #input-jeroan').forEach(el => {
-        el.addEventListener('input', handleInput);
-    });
+    document.getElementById('input-daging').addEventListener('input', handleInput);
+    document.getElementById('input-jeroan').addEventListener('input', handleInput);
 
-    // 3. Tombol Tambah Modal
-    document.getElementById('btn-tambah-modal').addEventListener('click', () => {
+    document.getElementById('btn-tambah').addEventListener('click', () => {
         buatBarisBaru();
-        // Tidak perlu save saat baris kosong ditambah, 
-        // nanti tersimpan otomatis saat user mulai ngetik isinya.
     });
 });
