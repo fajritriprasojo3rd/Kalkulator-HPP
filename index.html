@@ -192,12 +192,8 @@
                 <input type="number" id="input-qty-belanja" placeholder="Qty">
                 <input type="number" id="input-harga-belanja" placeholder="Harga">
             </div>
-            <select id="kategori-belanja">
-                <option value="Bahan Baku">Bahan Baku</option>
-                <option value="Operasional">Operasional (Listrik/Air)</option>
-                <option value="Gaji">Gaji Karyawan</option>
-                <option value="Lainnya">Lainnya</option>
-            </select>
+            <!-- Kategori akan diisi JS -->
+            <select id="kategori-belanja"></select>
             <div class="checkbox-row">
                 <input type="checkbox" id="cek-hutang-belanja">
                 <label for="cek-hutang-belanja" style="font-size: 14px;">Catat sebagai Hutang (Belum Bayar)</label>
@@ -209,11 +205,8 @@
             <div class="card-title">Catat Pemasukan (Jualan)</div>
             <input type="text" id="input-ket-jualan" placeholder="Keterangan (Cth: Jual Daging)">
             <input type="number" id="input-nominal-jualan" placeholder="Total Uang (Rp)">
-            <select id="kategori-jualan">
-                <option value="Penjualan Produk">Penjualan Produk</option>
-                <option value="Jasa">Jasa</option>
-                <option value="Lainnya">Lainnya</option>
-            </select>
+            <!-- Kategori akan diisi JS -->
+            <select id="kategori-jualan"></select>
             <div class="checkbox-row">
                 <input type="checkbox" id="cek-piutang-jualan">
                 <label for="cek-piutang-jualan" style="font-size: 14px;">Catat sebagai Piutang (Pelanggan Ngutang)</label>
@@ -249,7 +242,6 @@
 
     <!-- TAB 5: DATA & PENGATURAN -->
     <div id="tab-data" class="tab-content">
-        <!-- FITUR KEAMANAN BARU -->
         <div class="card">
             <div class="card-title">Keamanan Aplikasi</div>
             <input type="number" id="setting-pin-baru" placeholder="PIN Baru (4 Angka)" maxlength="4">
@@ -265,13 +257,30 @@
             <input type="text" id="setting-wa" placeholder="No WA Toko (Cth: 62812...)">
             <button class="btn btn-primary" onclick="simpanPengaturan()">Simpan Pengaturan</button>
         </div>
+        
+        <!-- MASTER KATEGORI BARU -->
+        <div class="card">
+            <div class="card-title">Master Kategori</div>
+            <div class="list-produk" id="list-kategori-container"></div>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="input-nama-kategori" placeholder="Nama Kategori" style="margin-bottom:0;">
+                <select id="input-tipe-kategori" style="margin-bottom:0; width: 120px;">
+                    <option value="pengeluaran">Keluar</option>
+                    <option value="pemasukan">Masuk</option>
+                </select>
+            </div>
+            <button class="btn btn-outline" onclick="tambahKategori()">Tambah Kategori</button>
+        </div>
+
         <div class="card">
             <div class="card-title">Master Produk</div>
             <div class="list-produk" id="list-produk-container"></div>
             <input type="text" id="input-nama-produk-baru" placeholder="Nama Produk">
+            <input type="text" id="input-satuan-produk-baru" placeholder="Satuan (Cth: Kg, Pcs, Pack)">
             <input type="number" id="input-harga-produk-baru" placeholder="Harga (Rp)">
             <button class="btn btn-outline" onclick="tambahProduk()">Tambah Produk</button>
         </div>
+        
         <div class="card">
             <div class="card-title">Data Pelanggan / Supplier (CRM)</div>
             <div class="list-produk" id="list-kontak-container"></div>
@@ -307,4 +316,4 @@
 
 <script src="script.js" defer></script>
 </body>
-  </html> 
+                </html> 
