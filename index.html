@@ -189,10 +189,9 @@
             <div class="card-title">Catat Pengeluaran (Belanja)</div>
             <select id="select-belanja"><option value="">-- Pilih Produk --</option></select>
             <div style="display: flex; gap: 10px;">
-                <input type="number" id="input-qty-belanja" placeholder="Qty">
+                <input type="number" step="any" id="input-qty-belanja" placeholder="Qty">
                 <input type="number" id="input-harga-belanja" placeholder="Harga">
             </div>
-            <!-- Kategori akan diisi JS -->
             <select id="kategori-belanja"></select>
             <div class="checkbox-row">
                 <input type="checkbox" id="cek-hutang-belanja">
@@ -205,7 +204,6 @@
             <div class="card-title">Catat Pemasukan (Jualan)</div>
             <input type="text" id="input-ket-jualan" placeholder="Keterangan (Cth: Jual Daging)">
             <input type="number" id="input-nominal-jualan" placeholder="Total Uang (Rp)">
-            <!-- Kategori akan diisi JS -->
             <select id="kategori-jualan"></select>
             <div class="checkbox-row">
                 <input type="checkbox" id="cek-piutang-jualan">
@@ -258,7 +256,6 @@
             <button class="btn btn-primary" onclick="simpanPengaturan()">Simpan Pengaturan</button>
         </div>
         
-        <!-- MASTER KATEGORI BARU -->
         <div class="card">
             <div class="card-title">Master Kategori</div>
             <div class="list-produk" id="list-kategori-container"></div>
